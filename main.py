@@ -21,22 +21,17 @@ class Blog(db.Model):
         self.body=body
 
 #a list of all Blog objects
-def blogs():
+def all_blogs():
     blogs = Blog.query.all()
     return blogs
 
 
-@app.route('/newpost', methods=['GET'])
+@app.route('/blog', methods=['GET', 'POST'])
 def newpost():
-    #render a template for a new blog post
-    return render_template('newpost.html')
-
-
-@app.route('/', methods=['POST', 'GET'])
-def index():
+        #validating conditionals
     body_error=''
     title_error=''
-    #validating conditionals
+
 
     if request.method == 'POST':
         blog_name = request.form['blog_title']
@@ -59,23 +54,24 @@ def index():
             new_blog = Blog(blog_name, blog_body)
             db.session.add(new_blog)
             db.session.commit() 
-            return render_template("/blog.html", name=blog_name, body=blog_body)
+            id = str(new_blog.id)
+            return redirect('/blog?id='+id)
+    #render a template for a new blog post
     
-    return render_template('index.html', blogs=blogs(), title_error=title_error, body_error=body_error)
+    else:
+        id = request.args.get('id')
+        if id!=None: 
+            blog=Blog.query.get(id)
+            blogs=blog
+            return render_template('blog.html', blogs=[blogs])
 
-
-@app.route('/blog')
-def blog():
     
-    #retrieve the blog from the id#
-    id=request.args.get('id')
-    
-    blog = Blog.query.filter_by(id=id).first()
-    name = blog.name
-    body = blog.body
 
-    #render a template featuring the new blog
-    return render_template('blog.html', name=name, body=body)
+@app.route('/newpost', methods=['POST', 'GET'])
+def index():
+    
+    return render_template('newpost.html', blogs=all_blogs())
+    
     
 if __name__ == '__main__':
 

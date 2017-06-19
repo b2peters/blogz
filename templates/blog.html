@@ -1,9 +1,22 @@
 {% extends 'base.html'%}
+
+
 {% block content %}
-<form >
-    <!--show the selected blog-->
-    <h2><center>{{name}}</center></h2>
-    <br>
-    <p>{{body}}</p>
+
+
+
+
+
+<form>
+        <h1><center>Build A Blog</center></h1>
+<!--{# linked blog titles return a page with the name as the title and the body as the rest. Still two nav buttons top left.#}-->
+        {% for blog in blogs %}
+        
+        <h3><a href="/blog?id={{blog.id}}" >{{blog.name}}</a></h3>
+        
+        <p>{{blog.body}}</p>
+
+        {% endfor %}
 </form>
+
 {% endblock %}
