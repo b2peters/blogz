@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        
+        <title>{{title}}</title>
+        <style type="text/css">
+            .error {
+                color:red;
+            }
+            </style>
+    </head>
+    <body>
+        <nav>
+            <!--{# add button for "main blog page" to return to the main page. titled "Build A Blog" with two buttons and all blogs justified left with a linked title.#}
+            {# add button for "Add a Blog Entry" to return to the main page. #}-->
+            <h2><a href="/">Main Blog Page</a> &nbsp; <a href="/newpost">Add a Blog Entry</a></h2>
+        </nav>
+
+        {% block content %}
+        {% endblock %}
+
+    </body>
+</html>
