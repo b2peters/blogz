@@ -4,7 +4,7 @@ import cgi
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:password@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -15,10 +15,23 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(120))
     body = db.Column(db.String(999))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, name, body):
+    def __init__(self, name, body, owner):
         self.name = name
         self.body=body
+        self.owner=owner
+
+class User(db.Model):
+
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(90))
+    blogs = db.relationship('Blog', backref='owner')
+
+    def __init__(self, username, password):
+        self.username=username
+        self.password=password
 
 #a list of all Blog objects
 def all_blogs():
