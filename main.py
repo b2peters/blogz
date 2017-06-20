@@ -60,16 +60,18 @@ def newpost():
     
     else:
         id = request.args.get('id')
-        if id!=None: 
+        if id : 
             blog=Blog.query.get(id)
-            blogs=blog
-            return render_template('blog.html', blogs=[blogs])
+            # blogs=blog
+            return render_template('blog.html', blogs=[blog])
+        else:
+            return render_template('blog.html', blogs=all_blogs())
 
     
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def index():
-    
+    # blogs=blogs
     return render_template('newpost.html', blogs=all_blogs())
     
     
