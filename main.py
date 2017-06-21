@@ -39,6 +39,12 @@ def all_blogs():
     blogs = Blog.query.all()
     return blogs
 
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'sign_up', 'index', 'blog'
+     ]
+    if request.endpoint not in allowed_routes and 'email' not in session:
+        return redirect('/login')
 
 @app.route('/blog', methods=['GET', 'POST'])
 def newpost():
@@ -73,15 +79,19 @@ def newpost():
     #render a template for a new blog post
     
     else:
-        id = request.args.get('id')
+        id = request.args.get('id', None)
+        userId=request.args.get('userId, None')
         if id : 
             blog=Blog.query.get(id)
             # blogs=blog
             return render_template('blog.html', blogs=[blog])
+        elif userId:
+            blogs=Blog.query.filter_by(owner_id=userId).all()
+            return render_template('blog.html, blogs=blogs')
         else:
             return render_template('blog.html', blogs=all_blogs())
 
-@app.route('/login', methods=['GET', 'POST'])    
+@app.route('/login', methods=['POST', 'GET'])    
 def login():
     if request.method == 'POST':
         email=request.form['email']
@@ -95,6 +105,7 @@ def login():
             flash('User does not exist')
         else:
             flash('User password incorrect')
+            
     return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -117,8 +128,8 @@ def signup():
 
 @app.route('/logout')
 def logout():
-    # del session['email']
-    session['email']=''
+    del session['email']
+    # session['email']=''
     return redirect('/blog')
 
 

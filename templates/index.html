@@ -9,9 +9,8 @@
 <!--{# linked blog titles return a page with the name as the title and the body as the rest. Still two nav buttons top left.#}-->
         {% for user in users %}
         
-        <h3>{{user.username}}</h3>
+        <h3><a href="/blog?user={{userId}}">{{user.username}}</a></h3>
         
-        <!--<p>{{user.name}}</p>-->
 
         {% endfor %}
 </form>
