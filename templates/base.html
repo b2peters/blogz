@@ -11,6 +11,18 @@
             </style>
     </head>
     <body>
+
+        <div>
+            <a href='logout'>log out</a>
+        </div>
+
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                    <ul>
+                        {% for category,message in messages %}
+                        <li class="{{category}}">{{message}}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endwith %}
         <nav>
             <!--{# add button for "main blog page" to return to the main page. titled "Build A Blog" with two buttons and all blogs justified left with a linked title.#}
             {# add button for "Add a Blog Entry" to return to the main page. #}-->

@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy 
 import cgi
 
@@ -8,6 +8,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhos
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+app.secret_key = 'y337kGcys&zP3B'
 
 #intitialize the Blog class
 class Blog(db.Model):
@@ -80,13 +81,58 @@ def newpost():
         else:
             return render_template('blog.html', blogs=all_blogs())
 
-    
+@app.route('/login', methods=['GET', 'POST'])    
+def login():
+    if request.method == 'POST':
+        email=request.form['email']
+        password=request.form['password']
+        user=User.query.filter_by(username=email).first()
+        if user and user.password == password:
+            session['email'] = email
+            flash("Logged in")
+            return redirect('/')
+        elif not user:
+            flash('User does not exist')
+        else:
+            flash('User password incorrect')
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == "POST":
+        email = request.form['email']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        existing_user = User.query.filter_by(username=email).first()
+        if not existing_user:
+            new_user = User(email,password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['email']=email
+            return redirect('/newpost')
+        else:
+            flash('Duplicate user')
+    return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    # del session['email']
+    session['email']=''
+    return redirect('/blog')
+
+
+
 
 @app.route('/newpost', methods=['POST', 'GET'])
-def index():
+def create_new():
     # blogs=blogs
     return render_template('newpost.html', blogs=all_blogs())
     
+@app.route('/')
+def index():
+    users=User.query.all()
+    return render_template('index.html', users=users)
     
 if __name__ == '__main__':
 
