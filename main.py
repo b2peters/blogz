@@ -41,7 +41,7 @@ def all_blogs():
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'sign_up', 'index', 'blog'
+    allowed_routes = ['login', 'signup', 'index', 'blog'
      ]
     if request.endpoint not in allowed_routes and 'email' not in session:
         return redirect('/login')
@@ -56,6 +56,7 @@ def newpost():
     if request.method == 'POST':
         blog_name = request.form['blog_title']
         blog_body = request.form['blog_body']
+        owner = User.query.filter_by(username=session['email']).first()
 
         #does it have a title
         if blog_name.strip() == "":
@@ -71,7 +72,7 @@ def newpost():
         
         #commit new blog to db
         else:
-            new_blog = Blog(blog_name, blog_body)
+            new_blog = Blog(blog_name, blog_body, owner)
             db.session.add(new_blog)
             db.session.commit() 
             id = str(new_blog.id)
@@ -80,14 +81,15 @@ def newpost():
     
     else:
         id = request.args.get('id', None)
-        userId=request.args.get('userId, None')
+        userId=request.args.get('userId', None)
+        owner=User.query.filter_by(id=userId).first()
         if id : 
             blog=Blog.query.get(id)
             # blogs=blog
             return render_template('blog.html', blogs=[blog])
         elif userId:
             blogs=Blog.query.filter_by(owner_id=userId).all()
-            return render_template('blog.html, blogs=blogs')
+            return render_template('single_user.html', blogs=blogs, owner=owner)
         else:
             return render_template('blog.html', blogs=all_blogs())
 
